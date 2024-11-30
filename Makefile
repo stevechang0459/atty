@@ -6,10 +6,11 @@ PROJDIR = $(CURDIR)
 SRCDIR 	= $(PROJDIR)/src
 LIBDIR	= $(PROJDIR)/lib
 BINDIR 	= $(PROJDIR)/bin
-APPNAME = linux_c_project_template
+APPNAME = algotty
 
 SUBDIR = \
 	src \
+	src/serial \
 
 COMMON_INCLUDE = \
 	$(CURDIR)/src/include \
@@ -131,6 +132,7 @@ LDFLAGS = \
 # LDLIBS. Non-library linker flags, such as -L, should go in the LDFLAGS variable.
 LIBS = \
 	main \
+	serial \
 
 LDLIBS = $(foreach lib,$(LIBS),-l$(lib)) -lpthread	# <-- Do not change this order.
 

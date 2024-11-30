@@ -57,3 +57,4 @@ dkms.conf
 
 # Project
 bin/*
+*.code-workspace
