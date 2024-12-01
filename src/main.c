@@ -9,7 +9,7 @@
 #include "types.h"
 #include "list.h"
 
-#define CONFIG_NON_BLOCK_MODE		(0)
+#define CONFIG_NON_BLOCK_MODE		(1)
 #define CONFIG_DEBUG			(0)
 
 #define SERIAL_PORT	"/dev/ttyUSB0"
@@ -40,21 +40,20 @@ int main(int argc, char *argv[])
 	clear_screen();
 
 	char buffer[BUFFER_SIZE];
-	memset(buffer, 0, sizeof(buffer));
 	while (1) {
 		int data_len = read(fd, buffer, sizeof(buffer)-1);
 		if (data_len > 0) {
 			#if (CONFIG_DEBUG)
 			printf("data_len: %d\n", data_len);
 			#else
+			buffer[data_len] = '\0';
 			printf("%s", buffer);
 			#endif
-			memset(buffer, 0, data_len);
+			fflush(stdout);
 		} else if (data_len < 0) {
 			#if (CONFIG_NON_BLOCK_MODE)
 			if (errno == EAGAIN) {
-				// usleep(100000);
-				usleep(2000000);
+				usleep(100000);
 			} else {
 				fprintf(stderr, "Failed to read from serial port: %s (%d)\n",
 					strerror(errno), errno);
