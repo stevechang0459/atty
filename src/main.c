@@ -10,7 +10,7 @@
 #include "list.h"
 
 #define CONFIG_NON_BLOCK_MODE		(1)
-#define CONFIG_DEBUG			(0)
+#define CONFIG_MAIN_DEBUG		(0)
 
 #define SERIAL_PORT	"/dev/ttyUSB0"
 #define BUFFER_SIZE	4096
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 	while (1) {
 		int data_len = read(fd, buffer, sizeof(buffer)-1);
 		if (data_len > 0) {
-			#if (CONFIG_DEBUG)
+			#if (CONFIG_MAIN_DEBUG)
 			printf("data_len: %d\n", data_len);
 			#else
 			buffer[data_len] = '\0';
