@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <termios.h>
 
-#define BAUD_RATE			B115200
+#define BAUD_RATE	B115200
 
 void serial_port_init(int fd)
 {
