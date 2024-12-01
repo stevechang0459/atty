@@ -10,7 +10,8 @@
 #include "list.h"
 
 #define CONFIG_NON_BLOCK_MODE		(1)
-#define CONFIG_DEBUG			(0)
+#define CONFIG_MAIN_DEBUG		(0)
+#define CONFIG_SERIAL_DEBUG		(1)
 
 #define SERIAL_PORT	"/dev/ttyUSB0"
 #define BUFFER_SIZE	4096
@@ -36,6 +37,11 @@ int main(int argc, char *argv[])
 
 	serial_port_init(fd);
 	printf("Serial port %s opened successfully at 115200 baud.\n", SERIAL_PORT);
+
+	#if (CONFIG_SERIAL_DEBUG)
+	close(fd);
+	exit(EXIT_SUCCESS);
+	#endif
 
 	clear_screen();
 
