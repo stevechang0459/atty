@@ -1,6 +1,6 @@
-# Project: algo4linux
+# Project: atty
 # Makefile created by Steve Chang
-# Date modified: 2024.06.22
+# Date modified: 2024.11.30
 
 LIBNAME = libmain.a
 
@@ -8,7 +8,8 @@ DIR = src
 
 SUBDIR =
 
-INCLUDE =
+INCLUDE = \
+	serial \
 
 SRCS = $(wildcard *.c)
 

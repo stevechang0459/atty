@@ -58,3 +58,5 @@ dkms.conf
 # Project
 bin/*
 *.code-workspace
+.vscode
+*.txt

@@ -1,6 +1,6 @@
-# Project: algo4linux
+# Project: atty
 # Makefile created by Steve Chang
-# Date modified: 2024.06.22
+# Date modified: 2024.11.30
 
 OBJS = $(addprefix $(OBJDIR)/,$(SRCS:.c=.o))
 ASMS = $(addprefix $(ASMDIR)/,$(SRCS:.c=.s))

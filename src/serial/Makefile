@@ -1,4 +1,4 @@
-# Project: algotty
+# Project: atty
 # Makefile created by Steve Chang
 # Date modified: 2024.11.30
 

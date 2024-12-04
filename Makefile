@@ -1,12 +1,12 @@
-# Project: algo4linux
+# Project: atty
 # Makefile created by Steve Chang
-# Date modified: 2024.06.22
+# Date modified: 2024.11.30
 
 PROJDIR = $(CURDIR)
 SRCDIR 	= $(PROJDIR)/src
 LIBDIR	= $(PROJDIR)/lib
 BINDIR 	= $(PROJDIR)/bin
-APPNAME = algotty
+APPNAME = atty
 
 SUBDIR = \
 	src \
