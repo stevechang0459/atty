@@ -25,11 +25,17 @@ void serial_port_init(int fd)
 	tty.c_lflag &= ~(IEXTEN | ECHOKE | ECHOCTL | ECHOK);
 
 	// tty.c_iflag = 0;
-	tty.c_iflag |= IGNBRK;
 	tty.c_iflag &= ~(IXOFF | IXANY | IXON | ICRNL);
+	tty.c_iflag |= IGNBRK;
+	// // map1602
+	// tty.c_iflag |= ICRNL;
 
 	// tty.c_oflag = 0;
-	tty.c_oflag &= ~(ONLCR | OPOST);
+	tty.c_oflag &= ~(ONLRET | ONLCR | OPOST);
+	// // raspberry pi 5
+	// tty.c_oflag |= (ONLRET | OPOST);
+	// // map1602
+	// tty.c_oflag |= (ONLCR | OPOST);
 
 	tty.c_cc[VMIN] = 1;
 	tty.c_cc[VTIME] = 1;

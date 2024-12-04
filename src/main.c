@@ -150,13 +150,19 @@ int main(int argc, char *argv[])
 			printf("strcspn: %ld\n", strcspn(data_out, "\n"));
 			#endif
 
-			if (strcmp(data_out, "exit\n") == 0) {
+			if (strcmp(data_out, "atty\n") == 0) {
 				printf("%s", data_out);
 				break;
 			}
 
-			data_out[strcspn(data_out, "\n")] = '\r';
-			data_out[strlen(data_out)] = '\0';
+			// // raspberry pi 5, = (ONLRET | OPOST);
+			// data_out[strcspn(data_out, "\n")] = '\r';
+			// data_out[strlen(data_out)+1] = '\0';
+
+			// // map1602, = (ONLCR | OPOST);
+			// data_out[strcspn(data_out, "\n")] = '\r';
+			// data_out[strlen(data_out)+1] = '\0';
+			// data_out[strlen(data_out)] = '\n';
 
 			bytes_written = write(fd, data_out, strlen(data_out));
 			#if (CONFIG_MAIN_DEBUG)
