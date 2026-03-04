@@ -11,6 +11,7 @@
 #include <libgen.h>
 #include <limits.h>
 #include <pwd.h>
+#include <sys/types.h>
 
 #include "global.h"
 #include "types.h"
@@ -314,6 +315,26 @@ int main(int argc, char *argv[])
 			goto exit;
 		}
 	}
+
+	// Attempt to retrieve the original user's UID and GID from environment variables
+	char *sudo_uid_str = getenv("SUDO_UID");
+	char *sudo_gid_str = getenv("SUDO_GID");
+
+	if ((sudo_uid_str != NULL) && (sudo_gid_str != NULL)) {
+		// Convert string values to uid_t and gid_t types
+		uid_t uid = (uid_t)atoi(sudo_uid_str);
+		gid_t gid = (gid_t)atoi(sudo_gid_str);
+
+		if (chown(file_name, uid, gid) == -1) {
+			fprintf(stderr, "Error: Failed to change file ownership: %s (%d)\n",
+				strerror(errno), errno);
+		} else {
+			printf("Info: Successfully changed file ownership back to UID: %d, GID: %d\n",
+				uid, gid);
+		}
+	} else {
+        	printf("Info: Sudo environment not detected, file will retain current executor's ownership.\n");
+    	}
 
 	fds[0].fd = fd;
 	fds[0].events = POLLIN;
