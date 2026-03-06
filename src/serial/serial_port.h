@@ -15,6 +15,7 @@ struct serial_cfg
 	bool icrnl;
 	bool onlret;
 	bool onlcr;
+	bool time;
 };
 
 extern int serial_port_init(int fd, struct serial_cfg *cfg);

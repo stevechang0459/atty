@@ -18,22 +18,22 @@
 #include "list.h"
 #include "serial_port.h"
 
-#define ATTY_VERSION			"1.0.0"
+#define ATTY_VERSION			"1.1.0"
 
 #define CONFIG_NON_BLOCK_MODE		(1)
 #define CONFIG_MAIN_DEBUG		(0)
 #define CONFIG_GETOPT_DEBUG		(0)
 
 #define DEFAULT_SERIAL_PORT		"/dev/ttyUSB0"
-#define DEFAULT_BAUD_RATE		115200
-#define DEFAULT_FILE_SIZE_LIMIT		1024 * 1024 * 1024
-#define DATA_IN_BUF_SIZE		8192
-#define DATA_OUT_BUF_SIZE		512
-#define NFDS				2
-#define POLL_TIMEOUT_MS			-1
-#define NON_BLOCK_DELAY_MS		100000
-#define FILE_NAME_MAX			256
-#define DEV_NAME_MAX			256
+#define DEFAULT_BAUD_RATE		(115200)
+#define DEFAULT_FILE_SIZE_LIMIT		(1024 * 1024 * 1024)
+#define DATA_IN_BUF_SIZE		(8192)
+#define DATA_OUT_BUF_SIZE		(512)
+#define NFDS				(2)
+#define POLL_TIMEOUT_MS			(-1)
+#define NON_BLOCK_DELAY_MS		(100000)
+#define FILE_NAME_MAX			(256)
+#define DEV_NAME_MAX			(256)
 
 struct pollfd fds[NFDS];
 
@@ -153,12 +153,13 @@ int main(int argc, char *argv[])
 		.save 			= 0,
 		.icrnl 			= 0,
 		.onlret 		= 0,
-		.onlcr 			= 0
+		.onlcr 			= 0,
+		.time			= 0,
 	};
 
 	int opt;
 	/* handle (optional) flags first */
-	while ((opt = getopt(argc, argv, "cd:hlno:r:svz::")) != -1) {
+	while ((opt = getopt(argc, argv, "cd:hlno:r:stvz::")) != -1) {
 		#if (CONFIG_GETOPT_DEBUG)
 		printf("opt: %c,%d,%d\n", (char)opt, optind, argc);
 		#endif
@@ -229,6 +230,9 @@ int main(int argc, char *argv[])
 			file_name[len] = '\0';
 			printf("output_file[%ld]: %s\n", len, file_name);
 			break;
+		case 't':
+			cfg.time = 1;
+			break;
 		case 'z':
 			if (optarg == NULL) {
 				cfg.file_size_limit = DEFAULT_FILE_SIZE_LIMIT;
@@ -247,7 +251,7 @@ int main(int argc, char *argv[])
 
 			break;
 		case 'v':
-			printf("atty version %s\n", ATTY_VERSION);
+			printf("Atty Version %s\n", ATTY_VERSION);
 		case '?':
 			exit(EXIT_SUCCESS);
 			break;
@@ -341,6 +345,8 @@ int main(int argc, char *argv[])
 	fds[1].fd = STDIN_FILENO;
 	fds[1].events = POLLIN;
 
+	bool is_new_line = true;
+
 	clear_screen();
 
 	while (1) {
@@ -364,9 +370,49 @@ int main(int argc, char *argv[])
 				printf("bytes_read: %ld\n", bytes_read);
 				#else
 				data_in[bytes_read] = '\0';
-				if (cfg.save)
-					fprintf(fp, "%s", data_in);
-				printf("%s", data_in);
+
+				if (cfg.time) {
+					for (ssize_t i = 0; i < bytes_read; i++) {
+						// If it is the start of a new line, print the timestamp
+						if (is_new_line) {
+							struct timespec ts;
+							struct tm *t;
+							char time_str[64];
+
+							// Get current time with nanosecond precision
+							clock_gettime(CLOCK_REALTIME, &ts);
+
+							// Convert seconds to local time format
+							t = localtime(&ts.tv_sec);
+
+							// Format the time up to seconds: [YYYY-MM-DD HH:MM:SS
+							strftime(time_str, sizeof(time_str), "[%Y-%m-%d %H:%M:%S", t);
+
+							// Calculate milliseconds from nanoseconds (1 ms = 1,000,000 ns)
+							int ms = ts.tv_nsec / 1000000;
+
+							// Append milliseconds and the closing bracket
+							if (cfg.save && fp)
+								fprintf(fp, "%s.%03d] ", time_str, ms);
+
+							printf("%s.%03d] ", time_str, ms);
+							is_new_line = false;
+						}
+						// Output the current character one by one
+						if (cfg.save && fp)
+							fputc(data_in[i], fp);
+
+						putchar(data_in[i]);
+
+						// Check if the current character is a newline character
+						if (data_in[i] == '\n')
+							is_new_line = true;
+					}
+				} else {
+					if (cfg.save && fp)
+						fprintf(fp, "%s", data_in);
+					printf("%s", data_in);
+				}
 				#endif
 				fflush(stdout);
 			} else if (bytes_read < 0) {
